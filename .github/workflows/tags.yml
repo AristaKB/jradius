@@ -1,0 +1,68 @@
+name: JRadius
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.VERSION }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: 17
+          java-package: "jdk"
+
+      - id: get_version
+        run: echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
+
+      - name: Set current version
+        run: mvn -B versions:set -DnewVersion=${{ steps.get_version.outputs.VERSION }}
+
+      - name: Build with Maven
+        run: mvn -B clean verify
+
+      - name: Upload jradius jar
+        uses: actions/upload-artifact@v3
+        with:
+          path: apps/target/*.jar
+
+      - name: Upload jradius zip
+        uses: actions/upload-artifact@v3
+        with:
+          path: client/target/*.zip
+
+  release:
+    needs: build
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout artifact
+        uses: actions/download-artifact@v3
+        with:
+          path: target
+
+      - name: Test
+        run: ls target/artifact
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:          
+          body: |
+            ${{github.event.head_commit.message}}
+          artifacts: "target/artifact/*.zip,target/artifact/*.jar"
