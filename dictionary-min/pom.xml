@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.github.untangle.jradius</groupId>
+    <artifactId>jradius</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <groupId>com.github.untangle.jradius</groupId>
+  <artifactId>jradius-dictionary-min</artifactId>
+  <name>${project.artifactId}-${project.version}</name>
+  <description>JRadius Dictionary</description>
+
+  <properties>
+    <dictionary.srcdir>${basedir}/../freeradius/dict-min</dictionary.srcdir>
+    <dictionary.targetdir>${basedir}/target/dictionary-src</dictionary.targetdir>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.github.untangle.jradius</groupId>
+      <artifactId>jradius-core</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>check-uptodate</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>initialize</phase>
+            <configuration>
+              <exportAntProperties>true</exportAntProperties>
+              <target>
+                <uptodate property="dictionary.uptodate" targetfile="${project.build.directory}/${project.build.finalName}.jar">
+                  <srcfiles dir="${dictionary.srcdir}" includes="**/*" />
+                </uptodate>
+                <echo message="check-uptodate result: ${dictionary.uptodate}"/>
+              </target>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-if-necessary</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <target name="generate-classes" unless="dictionary.uptodate">
+                <java classname="net.jradius.freeradius.RadiusDictionary" failonerror="true" fork="false" maxmemory="800m">
+                  <classpath>
+                    <path refid="maven.compile.classpath"></path>
+                  </classpath>
+                  <arg value="net.jradius.dictionary"></arg>
+                  <arg value="${dictionary.srcdir}"></arg>
+                  <arg value="${dictionary.targetdir}"></arg>
+                </java>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <sourceDirectory>target/dictionary-src</sourceDirectory>
+
+  </build>
+
+</project>

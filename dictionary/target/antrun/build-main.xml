@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-antrun-" default="main">
+  <target name="main">
+    <uptodate targetfile="/home/khushbu/worksta/kb/jradius/dictionary/target/jradius-dictionary-1.0.0.jar" property="dictionary.uptodate">
+      <srcfiles includes="**/*" dir="/home/khushbu/worksta/kb/jradius/dictionary/../freeradius/dict" />
+    </uptodate>
+    <echo message="check-uptodate result: ${dictionary.uptodate}" />
+  </target>
+</project>

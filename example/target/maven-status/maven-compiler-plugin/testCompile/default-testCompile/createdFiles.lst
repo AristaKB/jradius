@@ -1,0 +1,5 @@
+net/jradius/tests/AppTestCase.class
+net/jradius/tests/MyCallbackHandler.class
+net/jradius/tests/TestAction.class
+net/jradius/tests/JAASAuthenticationTest.class
+net/jradius/tests/RunRadius.class

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-antrun-" default="generate-classes">
+  <target unless="dictionary.uptodate" name="generate-classes">
+    <java fork="false" classname="net.jradius.freeradius.RadiusDictionary" maxmemory="800m" failonerror="true">
+      <classpath>
+        <path refid="maven.compile.classpath"></path>
+      </classpath>
+      <arg value="net.jradius.dictionary"></arg>
+      <arg value="/home/khushbu/worksta/kb/jradius/dictionary/../freeradius/dict"></arg>
+      <arg value="/home/khushbu/worksta/kb/jradius/dictionary/target/dictionary-src"></arg>
+    </java>
+  </target>
+</project>
